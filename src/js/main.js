@@ -88,7 +88,19 @@ d3.json(urlLink, function(error, json) {
         .attr("cy", function(d) {
             return yScale(d.Place);
         })
-        .attr("r", "5px");
+        .attr("r", "5px")
+        .attr("fill", function(d) {
+            if (d.Doping === "") {
+                return "orange";
+            } else {
+                return "blue";
+            }
+        })
+        .append("text")
+        .attr("dx", function(d) {
+            return -20;
+        })
+        .text("Test");
 
     console.log(timeDifferences);
 
