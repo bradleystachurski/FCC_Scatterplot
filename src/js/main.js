@@ -33,7 +33,15 @@ var svg = d3.select("body")
 
 //Read JSON file and visualize SVG
 d3.json(urlLink, function(error, json) {
+    //Load JSON data to dataset variable
     dataset = json;
+
+
+    //Todo: define domain for x and y
+    xScale.domain([180, 0]);
+    yScale.domain([d3.max(dataset, function(d) {
+        return d.Place;
+    }), 0]);
 
     var fastestTime = d3.min(dataset, function(d) {
         return d.Seconds;
@@ -47,15 +55,39 @@ d3.json(urlLink, function(error, json) {
         timeDifferences.push(dataset[i].Seconds - fastestTime);
     }
 
+    //Create xAxis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "1.0em")
+        .attr("dy", "1.0em")
+        .attr("transform", "rotate(0)");
+
+    //Create yAxis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Ranking");
+
     //Create scatterplot from data
     svg.selectAll("circles")
         .data(dataset)
         .enter()
         .append("circle")
         .attr("cx", function(d) {
-            return d.Seconds - fastestTime;
+            return xScale(d.Seconds - fastestTime);
         })
-        .attr("cy", "10px")
+        .attr("cy", function(d) {
+            return yScale(d.Place);
+        })
         .attr("r", "5px");
 
     console.log(timeDifferences);
