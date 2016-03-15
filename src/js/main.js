@@ -7,6 +7,17 @@ var urlLink = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceDa
 
 var dataset = [];
 
+//Todo: Format minutes (last thing I'll do programming for night of 3/14)
+
+var formatCount = d3.format(",.0f"),
+    formatTime = d3.time.format("%H:%M"),
+    formatMinutes = function(d) {
+        var t = new Date(2016, 0, 1, 0, d);
+        console.log(t);
+        t.setSeconds(t.getSeconds() + d);
+        return formatTime(t);
+    };
+
 //Create scales for x and y before binding data
 var xScale = d3.scale.linear();
 
@@ -15,7 +26,8 @@ var yScale = d3.scale.linear();
 //Create axes
 var xAxis = d3.svg.axis()
     .scale(xScale)
-    .orient("bottom");
+    .orient("bottom")
+    .tickFormat(formatMinutes);
 
 var yAxis = d3.svg.axis()
     .scale(yScale)
@@ -48,7 +60,7 @@ d3.json(urlLink, function(error, json) {
     console.log(dataset);
 
     //Todo: define domain for x and y
-    xScale.domain([180, 0])
+    xScale.domain([190, 0])
         .range([0, width]);
     yScale.domain([1, 36])
         .range([0, height]);
@@ -114,5 +126,7 @@ d3.json(urlLink, function(error, json) {
         .attr("y", function(d) {
             return yScale(d.Place) + 4;
         })
+
+    //Todo: Create legend
 
 });
