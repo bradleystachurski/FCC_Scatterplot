@@ -8,11 +8,9 @@ var urlLink = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceDa
 var dataset = [];
 
 //Create scales for x and y before binding data
-var xScale = d3.time.scale()
-    .range([0, width]);
+var xScale = d3.scale.linear();
 
-var yScale = d3.scale.linear()
-    .range([height, 0]);
+var yScale = d3.scale.linear();
 
 //Create axes
 var xAxis = d3.svg.axis()
@@ -37,23 +35,27 @@ d3.json(urlLink, function(error, json) {
     dataset = json;
 
 
+    console.log(d3.max(dataset, function(d) {
+        return d.Seconds;
+    }) - d3.min(dataset, function(d) {
+            return d.Seconds}));
+
+    for (var i = 0; i < dataset.length; i++) {
+        dataset[i].SecondsBehind = dataset[i].Seconds - d3.min(dataset, function(d) {
+                return d.Seconds});
+    }
+
+    console.log(dataset);
+
     //Todo: define domain for x and y
-    xScale.domain([180, 0]);
-    yScale.domain([d3.max(dataset, function(d) {
-        return d.Place;
-    }), 0]);
+    xScale.domain([180, 0])
+        .range([0, width]);
+    yScale.domain([1, 36])
+        .range([0, height]);
 
     var fastestTime = d3.min(dataset, function(d) {
         return d.Seconds;
     });
-
-    //Todo: Map differences in time from fastest and convert format to mm:ss
-
-    //One way to go about it, think there's a better solution
-    var timeDifferences = [];
-    for (var i = 0; i < dataset.length; i++) {
-        timeDifferences.push(dataset[i].Seconds - fastestTime);
-    }
 
     //Create xAxis
     svg.append("g")
@@ -83,7 +85,7 @@ d3.json(urlLink, function(error, json) {
         .enter()
         .append("circle")
         .attr("cx", function(d) {
-            return xScale(d.Seconds - fastestTime);
+            return xScale(d.SecondsBehind);
         })
         .attr("cy", function(d) {
             return yScale(d.Place);
@@ -95,15 +97,22 @@ d3.json(urlLink, function(error, json) {
             } else {
                 return "blue";
             }
-        })
+        });
+
+    //Add names as text label
+    //Todo: We're stuck on getting all the names printed. Only partially prints and spent way too long on fixing it.
+    svg.selectAll("text")
+        .data(dataset)
+        .enter()
         .append("text")
-        .attr("dx", function(d) {
-            return -20;
+        .text(function(d) {
+            return d.Name;
         })
-        .text("Test");
+        .attr("x", function(d) {
+            return xScale(d.SecondsBehind) + 10;
+        })
+        .attr("y", function(d) {
+            return yScale(d.Place) + 4;
+        })
 
-    console.log(timeDifferences);
-
-    console.log(fastestTime);
-    console.log(dataset[0]);
 });
