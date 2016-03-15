@@ -9,11 +9,9 @@ var dataset = [];
 
 //Todo: Format minutes (last thing I'll do programming for night of 3/14)
 
-var formatCount = d3.format(",.0f"),
-    formatTime = d3.time.format("%H:%M"),
+var formatTime = d3.time.format("%M:%S"),
     formatMinutes = function(d) {
-        var t = new Date(2016, 0, 1, 0, d);
-        console.log(t);
+        var t = new Date(2016, 0, 1, 0);
         t.setSeconds(t.getSeconds() + d);
         return formatTime(t);
     };
