@@ -1,5 +1,5 @@
 //Width and height
-var margin = {top: 40, right: 20, bottom: 30, left: 40},
+var margin = {top: 40, right: 100, bottom: 100, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -44,7 +44,6 @@ d3.json(urlLink, function(error, json) {
     //Load JSON data to dataset variable
     dataset = json;
 
-
     console.log(d3.max(dataset, function(d) {
         return d.Seconds;
     }) - d3.min(dataset, function(d) {
@@ -66,6 +65,24 @@ d3.json(urlLink, function(error, json) {
     var fastestTime = d3.min(dataset, function(d) {
         return d.Seconds;
     });
+
+    //Add names as text label
+    //Todo: We're stuck on getting all the names printed. Only partially prints and spent way too long on fixing it.
+    //Alright, this code works now that it's above where I .enter() the dataset for the circles and the other
+    //text elemnts. Need to figure out why it's doing that. Kinda fucked
+    svg.selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .text(function(d) {
+            return d.Name;
+        })
+        .attr("x", function(d) {
+            return xScale(d.SecondsBehind) + 10;
+        })
+        .attr("y", function(d) {
+            return yScale(d.Place) + 4;
+        });
 
     //Create xAxis
     svg.append("g")
@@ -109,6 +126,10 @@ d3.json(urlLink, function(error, json) {
             }
         });
 
+    var dataNames = [];
+    for (var i = 0; i < dataset.length; i++) {
+        dataNames.push(dataset[i].Name);
+    }
     //Add names as text label
     //Todo: We're stuck on getting all the names printed. Only partially prints and spent way too long on fixing it.
     svg.selectAll("text")
@@ -123,7 +144,21 @@ d3.json(urlLink, function(error, json) {
         })
         .attr("y", function(d) {
             return yScale(d.Place) + 4;
-        })
+        });
+
+
+    console.log(dataNames);
+
+    //Todo: Create axis labels
+    svg.append("text")
+        .attr("x", (width / 2))
+        .attr("y", (height + (margin.bottom / 2) + 20))
+        .attr("text-anchor", "middle")
+        .attr("width", width)
+        .style("font-size", "12px")
+        .style("font-family", "arial")
+        .style("text-decoration", "none")
+        .text("Testing... Your mom");
 
     //Todo: Create legend
 
