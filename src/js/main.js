@@ -1,14 +1,13 @@
 //Width and height
-var margin = {top: 40, right: 100, bottom: 100, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var margin = {top: 110, right: 120, bottom: 80, left: 120},
+    width = 1000 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
 
 var urlLink = "https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json";
 
 var dataset = [];
 
-//Todo: Format minutes (last thing I'll do programming for night of 3/14)
-
+//Add format for minutes:seconds
 var formatTime = d3.time.format("%M:%S"),
     formatMinutes = function(d) {
         var t = new Date(2016, 0, 1, 0);
@@ -39,22 +38,38 @@ var svg = d3.select("body")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top +")");
 
+//Just the tip...
+var tip = d3.tip()
+    .attr("class", "d3-tip")
+    .offset([-10, 0])
+    .html(function (d) {
+        var caughtDoping = "";
+
+        if (d.Doping !== "") {
+            caughtDoping = d.Doping;
+        } else {
+            caughtDoping = "Not yet...";
+        }
+
+        var toolTipDetails = "Name: " + d.Name + "<br>" + "Country: " + d.Nationality +
+                    "<br>" + "Year: " + d.Year + "<br>" + "Place: " + d.Place + "<br>" + "Time: " + d.Time +
+                    "<br> <br>" + "Doping: " + caughtDoping;
+            ;
+        return "<span style='color: black'>" + toolTipDetails + "</span>"
+    });
+
+svg.call(tip);
+
 //Read JSON file and visualize SVG
 d3.json(urlLink, function(error, json) {
     //Load JSON data to dataset variable
     dataset = json;
 
-    console.log(d3.max(dataset, function(d) {
-        return d.Seconds;
-    }) - d3.min(dataset, function(d) {
-            return d.Seconds}));
-
+    //Add variable SecondsBehind to the dataset
     for (var i = 0; i < dataset.length; i++) {
         dataset[i].SecondsBehind = dataset[i].Seconds - d3.min(dataset, function(d) {
                 return d.Seconds});
     }
-
-    console.log(dataset);
 
     //Todo: define domain for x and y
     xScale.domain([190, 0])
@@ -101,8 +116,10 @@ d3.json(urlLink, function(error, json) {
         .call(yAxis)
         .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 6)
+        .attr("y", -35)
         .attr("dy", ".71em")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold")
         .style("text-anchor", "end")
         .text("Ranking");
 
@@ -120,11 +137,13 @@ d3.json(urlLink, function(error, json) {
         .attr("r", "5px")
         .attr("fill", function(d) {
             if (d.Doping === "") {
-                return "orange";
+                return "rgb(0, 209, 193)";
             } else {
-                return "blue";
+                return "rgb(255, 88, 91)";
             }
-        });
+        })
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
 
     var dataNames = [];
     for (var i = 0; i < dataset.length; i++) {
@@ -152,13 +171,24 @@ d3.json(urlLink, function(error, json) {
     //Todo: Create axis labels
     svg.append("text")
         .attr("x", (width / 2))
-        .attr("y", (height + (margin.bottom / 2) + 20))
+        .attr("y", (height + (margin.bottom / 2)))
         .attr("text-anchor", "middle")
         .attr("width", width)
+        .attr("font-weight", "bold")
         .style("font-size", "12px")
         .style("font-family", "arial")
         .style("text-decoration", "none")
-        .text("Testing... Your mom");
+        .text("Minutes Behind Fastest Time");
+
+    svg.append("text")
+        .attr("x", (width / 2))
+        .attr("y", (margin.top / 2) - 100)
+        .attr("text-anchor", "middle")
+        .attr("width", width)
+        .style("font-size", "25px")
+        .style("font-family", "arial")
+        .style("text-decoration", "none")
+        .text("Doping in Professional Bicycle Racing");
 
     //Todo: Create legend
 

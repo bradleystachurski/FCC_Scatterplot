@@ -111,7 +111,8 @@ body {
     line-height: 1;
     font-weight: bold;
     padding: 12px;
-    background: #A5BDD9;
+    /*background: #A5BDD9;*/
+    background: rgba(165, 189, 217, .85);
     color: #fff;
     border-radius: 2px;
 }
