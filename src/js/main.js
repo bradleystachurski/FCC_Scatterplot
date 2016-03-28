@@ -191,5 +191,33 @@ d3.json(urlLink, function(error, json) {
         .text("Doping in Professional Bicycle Racing");
 
     //Todo: Create legend
+    var legendRectSize = 18;
+    var legendSpacing = 4;
+
+    var color = d3.scale.category20b();
+
+    var legend = svg.selectAll('.legend')                     // NEW
+        .data(color.domain())                                   // NEW
+        .enter()                                                // NEW
+        .append('g')                                            // NEW
+        .attr('class', 'legend')                                // NEW
+        .attr('transform', function(d, i) {                     // NEW
+            var height = legendRectSize + legendSpacing;          // NEW
+            var offset =  height * color.domain().length / 2;     // NEW
+            var horz = -2 * legendRectSize;                       // NEW
+            var vert = i * height - offset;                       // NEW
+            return 'translate(' + horz + ',' + vert + ')';        // NEW
+        });                                                     // NEW
+
+    legend.append('rect')                                     // NEW
+        .attr('width', legendRectSize)                          // NEW
+        .attr('height', legendRectSize)                         // NEW
+        .style('fill', color)                                   // NEW
+        .style('stroke', color);                                // NEW
+
+    legend.append('text')
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text(function(d) { return d; });
 
 });
